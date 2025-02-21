@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 public class BoardGame extends JPanel {
     private static final int ROWS = 6;
     private static final int COLS = 7;
+    private final BoardLogic boardLogic;
     private final Button[][] buttons = new Button[ROWS][COLS];
 
     private final Player playerX = new Player("X");
@@ -16,6 +17,7 @@ public class BoardGame extends JPanel {
 
     public BoardGame() {
         setLayout(new GridLayout(ROWS, COLS));
+        boardLogic = new BoardLogic(buttons);
 
         // Loop from last row (5) to first row (0)
         for (int row = ROWS - 1; row >= 0; row--) {
@@ -31,10 +33,13 @@ public class BoardGame extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             Button button = (Button) e.getSource();
-
-            if (button.isEmpty()) {
-                button.setValue(current.getSymbol());
-                current = (current == playerX) ? playerO : playerX;
+            int col = button.getCol();
+            if (boardLogic != null) {
+                int row = boardLogic.getLowestEmptyRow(col);
+                if (row != -1) {
+                    buttons[row][col].setValue(current.getSymbol());
+                    current = (current == playerX) ? playerO : playerX;
+                }
             }
         }
     }
